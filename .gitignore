@@ -1,0 +1,6 @@
+# artifacts
+data/
+models/
+storage/
+
+notebooks/.ipynb_checkpoints/*
