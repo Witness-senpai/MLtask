@@ -26,12 +26,97 @@ data_submission_path = '../data/sample_submission.csv'
 
 
 ```python
-data = pd.read_csv(data_path)
+dtypes = {
+        'MachineIdentifier':                                    'category',
+        'ProductName':                                          'category',
+        'EngineVersion':                                        'category',
+        'AppVersion':                                           'category',
+        'AvSigVersion':                                         'category',
+        'IsBeta':                                               'int8',
+        'RtpStateBitfield':                                     'float16',
+        'IsSxsPassiveMode':                                     'int8',
+        'DefaultBrowsersIdentifier':                            'float32',
+        'AVProductStatesIdentifier':                            'float32',
+        'AVProductsInstalled':                                  'float16',
+        'AVProductsEnabled':                                    'float16',
+        'HasTpm':                                               'int8',
+        'CountryIdentifier':                                    'int16',
+        'CityIdentifier':                                       'float32',
+        'OrganizationIdentifier':                               'float16',
+        'GeoNameIdentifier':                                    'float16',
+        'LocaleEnglishNameIdentifier':                          'int16',
+        'Platform':                                             'category',
+        'Processor':                                            'category',
+        'OsVer':                                                'category',
+        'OsBuild':                                              'int16',
+        'OsSuite':                                              'int16',
+        'OsPlatformSubRelease':                                 'category',
+        'OsBuildLab':                                           'category',
+        'SkuEdition':                                           'category',
+        'IsProtected':                                          'float16',
+        'AutoSampleOptIn':                                      'int8',
+        'PuaMode':                                              'category',
+        'SMode':                                                'float16',
+        'IeVerIdentifier':                                      'float16',
+        'SmartScreen':                                          'category',
+        'Firewall':                                             'float16',
+        'UacLuaenable':                                         'float64', 
+        'Census_MDC2FormFactor':                                'category',
+        'Census_DeviceFamily':                                  'category',
+        'Census_OEMNameIdentifier':                             'float32', 
+        'Census_OEMModelIdentifier':                            'float32',
+        'Census_ProcessorCoreCount':                            'float16',
+        'Census_ProcessorManufacturerIdentifier':               'float16',
+        'Census_ProcessorModelIdentifier':                      'float32', 
+        'Census_ProcessorClass':                                'category',
+        'Census_PrimaryDiskTotalCapacity':                      'float64', 
+        'Census_PrimaryDiskTypeName':                           'category',
+        'Census_SystemVolumeTotalCapacity':                     'float64', 
+        'Census_HasOpticalDiskDrive':                           'int8',
+        'Census_TotalPhysicalRAM':                              'float32',
+        'Census_ChassisTypeName':                               'category',
+        'Census_InternalPrimaryDiagonalDisplaySizeInInches':    'float32', 
+        'Census_InternalPrimaryDisplayResolutionHorizontal':    'float32', 
+        'Census_InternalPrimaryDisplayResolutionVertical':      'float32', 
+        'Census_PowerPlatformRoleName':                         'category',
+        'Census_InternalBatteryType':                           'category',
+        'Census_InternalBatteryNumberOfCharges':                'float64', 
+        'Census_OSVersion':                                     'category',
+        'Census_OSArchitecture':                                'category',
+        'Census_OSBranch':                                      'category',
+        'Census_OSBuildNumber':                                 'int16',
+        'Census_OSBuildRevision':                               'int32',
+        'Census_OSEdition':                                     'category',
+        'Census_OSSkuName':                                     'category',
+        'Census_OSInstallTypeName':                             'category',
+        'Census_OSInstallLanguageIdentifier':                   'float16',
+        'Census_OSUILocaleIdentifier':                          'int16',
+        'Census_OSWUAutoUpdateOptionsName':                     'category',
+        'Census_IsPortableOperatingSystem':                     'int8',
+        'Census_GenuineStateName':                              'category',
+        'Census_ActivationChannel':                             'category',
+        'Census_IsFlightingInternal':                           'float16',
+        'Census_IsFlightsDisabled':                             'float16',
+        'Census_FlightRing':                                    'category',
+        'Census_ThresholdOptIn':                                'float16',
+        'Census_FirmwareManufacturerIdentifier':                'float16',
+        'Census_FirmwareVersionIdentifier':                     'float32',
+        'Census_IsSecureBootEnabled':                           'int8',
+        'Census_IsWIMBootEnabled':                              'float16',
+        'Census_IsVirtualDevice':                               'float16',
+        'Census_IsTouchEnabled':                                'int8',
+        'Census_IsPenCapable':                                  'int8',
+        'Census_IsAlwaysOnAlwaysConnectedCapable':              'float16',
+        'Wdft_IsGamer':                                         'float16',
+        'Wdft_RegionIdentifier':                                'float16',
+        'HasDetections':                                        'int8'
+        }
 ```
 
-    c:\users\ilya\appdata\local\programs\python\python37\lib\site-packages\IPython\core\interactiveshell.py:3058: DtypeWarning: Columns (28) have mixed types. Specify dtype option on import or set low_memory=False.
-      interactivity=interactivity, compiler=compiler, result=result)
-    
+
+```python
+data = pd.read_csv(data_path, dtype=dtypes)
+```
 
 
 ```python
@@ -226,6 +311,101 @@ data['HasDetections'].value_counts()
 
 
 ```python
+data.info()
+```
+
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 8921483 entries, 0 to 8921482
+    Data columns (total 83 columns):
+    MachineIdentifier                                    category
+    ProductName                                          category
+    EngineVersion                                        category
+    AppVersion                                           category
+    AvSigVersion                                         category
+    IsBeta                                               int8
+    RtpStateBitfield                                     float16
+    IsSxsPassiveMode                                     int8
+    DefaultBrowsersIdentifier                            float32
+    AVProductStatesIdentifier                            float32
+    AVProductsInstalled                                  float16
+    AVProductsEnabled                                    float16
+    HasTpm                                               int8
+    CountryIdentifier                                    int16
+    CityIdentifier                                       float32
+    OrganizationIdentifier                               float16
+    GeoNameIdentifier                                    float16
+    LocaleEnglishNameIdentifier                          int16
+    Platform                                             category
+    Processor                                            category
+    OsVer                                                category
+    OsBuild                                              int16
+    OsSuite                                              int16
+    OsPlatformSubRelease                                 category
+    OsBuildLab                                           category
+    SkuEdition                                           category
+    IsProtected                                          float16
+    AutoSampleOptIn                                      int8
+    PuaMode                                              category
+    SMode                                                float16
+    IeVerIdentifier                                      float16
+    SmartScreen                                          category
+    Firewall                                             float16
+    UacLuaenable                                         float64
+    Census_MDC2FormFactor                                category
+    Census_DeviceFamily                                  category
+    Census_OEMNameIdentifier                             float32
+    Census_OEMModelIdentifier                            float32
+    Census_ProcessorCoreCount                            float16
+    Census_ProcessorManufacturerIdentifier               float16
+    Census_ProcessorModelIdentifier                      float32
+    Census_ProcessorClass                                category
+    Census_PrimaryDiskTotalCapacity                      float64
+    Census_PrimaryDiskTypeName                           category
+    Census_SystemVolumeTotalCapacity                     float64
+    Census_HasOpticalDiskDrive                           int8
+    Census_TotalPhysicalRAM                              float32
+    Census_ChassisTypeName                               category
+    Census_InternalPrimaryDiagonalDisplaySizeInInches    float32
+    Census_InternalPrimaryDisplayResolutionHorizontal    float32
+    Census_InternalPrimaryDisplayResolutionVertical      float32
+    Census_PowerPlatformRoleName                         category
+    Census_InternalBatteryType                           category
+    Census_InternalBatteryNumberOfCharges                float64
+    Census_OSVersion                                     category
+    Census_OSArchitecture                                category
+    Census_OSBranch                                      category
+    Census_OSBuildNumber                                 int16
+    Census_OSBuildRevision                               int32
+    Census_OSEdition                                     category
+    Census_OSSkuName                                     category
+    Census_OSInstallTypeName                             category
+    Census_OSInstallLanguageIdentifier                   float16
+    Census_OSUILocaleIdentifier                          int16
+    Census_OSWUAutoUpdateOptionsName                     category
+    Census_IsPortableOperatingSystem                     int8
+    Census_GenuineStateName                              category
+    Census_ActivationChannel                             category
+    Census_IsFlightingInternal                           float16
+    Census_IsFlightsDisabled                             float16
+    Census_FlightRing                                    category
+    Census_ThresholdOptIn                                float16
+    Census_FirmwareManufacturerIdentifier                float16
+    Census_FirmwareVersionIdentifier                     float32
+    Census_IsSecureBootEnabled                           int8
+    Census_IsWIMBootEnabled                              float16
+    Census_IsVirtualDevice                               float16
+    Census_IsTouchEnabled                                int8
+    Census_IsPenCapable                                  int8
+    Census_IsAlwaysOnAlwaysConnectedCapable              float16
+    Wdft_IsGamer                                         float16
+    Wdft_RegionIdentifier                                float16
+    HasDetections                                        int8
+    dtypes: category(30), float16(21), float32(11), float64(4), int16(6), int32(1), int8(10)
+    memory usage: 1.9 GB
+    
+
+
+```python
 cols = data.columns.to_list()
 ```
 
@@ -370,8 +550,8 @@ data.describe().T
     <tr>
       <td>RtpStateBitfield</td>
       <td>8889165.0</td>
-      <td>6.845332e+00</td>
-      <td>1.026055e+00</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>7.0</td>
       <td>7.0</td>
@@ -392,7 +572,7 @@ data.describe().T
     <tr>
       <td>DefaultBrowsersIdentifier</td>
       <td>433438.0</td>
-      <td>1.658355e+03</td>
+      <td>1.658356e+03</td>
       <td>9.989604e+02</td>
       <td>1.0</td>
       <td>788.0</td>
@@ -403,7 +583,7 @@ data.describe().T
     <tr>
       <td>AVProductStatesIdentifier</td>
       <td>8885262.0</td>
-      <td>4.784001e+04</td>
+      <td>4.784002e+04</td>
       <td>1.403237e+04</td>
       <td>3.0</td>
       <td>49480.0</td>
@@ -414,8 +594,8 @@ data.describe().T
     <tr>
       <td>AVProductsInstalled</td>
       <td>8885262.0</td>
-      <td>1.326779e+00</td>
-      <td>5.229272e-01</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>1.0</td>
       <td>1.0</td>
@@ -425,8 +605,8 @@ data.describe().T
     <tr>
       <td>AVProductsEnabled</td>
       <td>8885262.0</td>
-      <td>1.020967e+00</td>
-      <td>1.675544e-01</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>1.0</td>
       <td>1.0</td>
@@ -458,7 +638,7 @@ data.describe().T
     <tr>
       <td>CityIdentifier</td>
       <td>8596074.0</td>
-      <td>8.126653e+04</td>
+      <td>8.126650e+04</td>
       <td>4.892339e+04</td>
       <td>5.0</td>
       <td>36825.0</td>
@@ -469,8 +649,8 @@ data.describe().T
     <tr>
       <td>OrganizationIdentifier</td>
       <td>6169965.0</td>
-      <td>2.486492e+01</td>
-      <td>5.605503e+00</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>1.0</td>
       <td>18.0</td>
       <td>27.0</td>
@@ -480,8 +660,8 @@ data.describe().T
     <tr>
       <td>GeoNameIdentifier</td>
       <td>8921270.0</td>
-      <td>1.696616e+02</td>
-      <td>8.931813e+01</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1.0</td>
       <td>89.0</td>
       <td>181.0</td>
@@ -524,8 +704,8 @@ data.describe().T
     <tr>
       <td>IsProtected</td>
       <td>8885439.0</td>
-      <td>9.456237e-01</td>
-      <td>2.267587e-01</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>1.0</td>
       <td>1.0</td>
@@ -546,8 +726,8 @@ data.describe().T
     <tr>
       <td>SMode</td>
       <td>8383724.0</td>
-      <td>4.629208e-04</td>
-      <td>2.151061e-02</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -557,8 +737,8 @@ data.describe().T
     <tr>
       <td>IeVerIdentifier</td>
       <td>8862589.0</td>
-      <td>1.265760e+02</td>
-      <td>4.267778e+01</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1.0</td>
       <td>111.0</td>
       <td>117.0</td>
@@ -568,8 +748,8 @@ data.describe().T
     <tr>
       <td>Firewall</td>
       <td>8830133.0</td>
-      <td>9.785825e-01</td>
-      <td>1.447714e-01</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>1.0</td>
       <td>1.0</td>
@@ -601,7 +781,7 @@ data.describe().T
     <tr>
       <td>Census_OEMModelIdentifier</td>
       <td>8819250.0</td>
-      <td>2.391424e+05</td>
+      <td>2.391425e+05</td>
       <td>7.194786e+04</td>
       <td>1.0</td>
       <td>189692.0</td>
@@ -612,8 +792,8 @@ data.describe().T
     <tr>
       <td>Census_ProcessorCoreCount</td>
       <td>8880177.0</td>
-      <td>3.989696e+00</td>
-      <td>2.082553e+00</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>1.0</td>
       <td>2.0</td>
       <td>4.0</td>
@@ -623,8 +803,8 @@ data.describe().T
     <tr>
       <td>Census_ProcessorManufacturerIdentifier</td>
       <td>8880170.0</td>
-      <td>4.531551e+00</td>
-      <td>1.286847e+00</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>1.0</td>
       <td>5.0</td>
       <td>5.0</td>
@@ -634,7 +814,7 @@ data.describe().T
     <tr>
       <td>Census_ProcessorModelIdentifier</td>
       <td>8880140.0</td>
-      <td>2.371272e+03</td>
+      <td>2.371274e+03</td>
       <td>8.406009e+02</td>
       <td>2.0</td>
       <td>1998.0</td>
@@ -678,7 +858,7 @@ data.describe().T
     <tr>
       <td>Census_TotalPhysicalRAM</td>
       <td>8840950.0</td>
-      <td>6.115261e+03</td>
+      <td>6.115257e+03</td>
       <td>5.115821e+03</td>
       <td>255.0</td>
       <td>4096.0</td>
@@ -689,7 +869,7 @@ data.describe().T
     <tr>
       <td>Census_InternalPrimaryDiagonalDisplaySizeInInches</td>
       <td>8874349.0</td>
-      <td>1.667619e+01</td>
+      <td>1.667620e+01</td>
       <td>5.892932e+00</td>
       <td>0.7</td>
       <td>13.9</td>
@@ -711,7 +891,7 @@ data.describe().T
     <tr>
       <td>Census_InternalPrimaryDisplayResolutionVertical</td>
       <td>8874497.0</td>
-      <td>8.975707e+02</td>
+      <td>8.975703e+02</td>
       <td>2.146239e+02</td>
       <td>-1.0</td>
       <td>768.0</td>
@@ -755,8 +935,8 @@ data.describe().T
     <tr>
       <td>Census_OSInstallLanguageIdentifier</td>
       <td>8861399.0</td>
-      <td>1.461038e+01</td>
-      <td>1.020014e+01</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>1.0</td>
       <td>8.0</td>
       <td>9.0</td>
@@ -788,8 +968,8 @@ data.describe().T
     <tr>
       <td>Census_IsFlightingInternal</td>
       <td>1512724.0</td>
-      <td>1.388224e-05</td>
-      <td>3.725863e-03</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -799,8 +979,8 @@ data.describe().T
     <tr>
       <td>Census_IsFlightsDisabled</td>
       <td>8760960.0</td>
-      <td>1.004456e-05</td>
-      <td>3.169300e-03</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -810,8 +990,8 @@ data.describe().T
     <tr>
       <td>Census_ThresholdOptIn</td>
       <td>3254158.0</td>
-      <td>2.507561e-04</td>
-      <td>1.583330e-02</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -821,8 +1001,8 @@ data.describe().T
     <tr>
       <td>Census_FirmwareManufacturerIdentifier</td>
       <td>8738226.0</td>
-      <td>4.028800e+02</td>
-      <td>2.216528e+02</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>2.0</td>
       <td>142.0</td>
       <td>500.0</td>
@@ -832,7 +1012,7 @@ data.describe().T
     <tr>
       <td>Census_FirmwareVersionIdentifier</td>
       <td>8761350.0</td>
-      <td>3.302792e+04</td>
+      <td>3.302793e+04</td>
       <td>2.120691e+04</td>
       <td>3.0</td>
       <td>13156.0</td>
@@ -854,8 +1034,8 @@ data.describe().T
     <tr>
       <td>Census_IsWIMBootEnabled</td>
       <td>3261780.0</td>
-      <td>3.065811e-07</td>
-      <td>5.536976e-04</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -865,8 +1045,8 @@ data.describe().T
     <tr>
       <td>Census_IsVirtualDevice</td>
       <td>8905530.0</td>
-      <td>7.039446e-03</td>
-      <td>8.360558e-02</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -898,8 +1078,8 @@ data.describe().T
     <tr>
       <td>Census_IsAlwaysOnAlwaysConnectedCapable</td>
       <td>8850140.0</td>
-      <td>5.741920e-02</td>
-      <td>2.326419e-01</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -909,8 +1089,8 @@ data.describe().T
     <tr>
       <td>Wdft_IsGamer</td>
       <td>8618032.0</td>
-      <td>2.835785e-01</td>
-      <td>4.507347e-01</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -920,8 +1100,8 @@ data.describe().T
     <tr>
       <td>Wdft_RegionIdentifier</td>
       <td>8618032.0</td>
-      <td>7.883565e+00</td>
-      <td>4.550121e+00</td>
+      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>1.0</td>
       <td>3.0</td>
       <td>10.0</td>
@@ -963,7 +1143,7 @@ categorical_cols = []
 stat_cols = [('name', 'unique values', 'part of most popular')]
 
 # Analisis each column and grouping by numeric and catecorical features
-for col in cols[1:-1]:
+for col in cols[1:]:
     col_stat = data[col].value_counts()
     unique_values = len(col_stat)
     part_most_popular_val = col_stat.iloc[0] / col_stat.sum()
@@ -1066,6 +1246,7 @@ for row in stat_cols:
     Census_IsAlwaysOnAlwaysConnectedCapable            2              0.9425807953320512    
     Wdft_IsGamer                                       2              0.7164214521366363    
     Wdft_RegionIdentifier                              15             0.20887657414128888   
+    HasDetections                                      2              0.5002073085831134    
     
 
 
@@ -1074,7 +1255,7 @@ print(f'Categorical_cols ({len(categorical_cols)} pieces):')
 print(*categorical_cols, sep='\n')
 ```
 
-    Categorical_cols (58 pieces):
+    Categorical_cols (59 pieces):
     EngineVersion
     AppVersion
     AvSigVersion
@@ -1133,7 +1314,26 @@ print(*categorical_cols, sep='\n')
     Census_IsAlwaysOnAlwaysConnectedCapable
     Wdft_IsGamer
     Wdft_RegionIdentifier
+    HasDetections
     
+
+# Сохраняем данные только с необходимыми столбцами
+
+
+```python
+filtered_cols = numerical_cols + categorical_cols
+
+for col in cols:
+    if col not in filtered_cols:
+        data.drop(col, axis=1, inplace=True)
+```
+
+
+```python
+data.to_csv('../data/filtered_train_data.csv', index=False)
+```
+
+# Небольшая визуализация
 
 
 ```python
@@ -1141,7 +1341,7 @@ _ = data[numerical_cols].hist(figsize=(35,35))
 ```
 
 
-![png](data_exploring_files/data_exploring_13_0.png)
+![png](data_exploring_files/data_exploring_19_0.png)
 
 
 
@@ -1150,5 +1350,5 @@ _2 = data[categorical_cols].hist(figsize=(35,35))
 ```
 
 
-![png](data_exploring_files/data_exploring_14_0.png)
+![png](data_exploring_files/data_exploring_20_0.png)
 
