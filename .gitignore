@@ -1,10 +1,7 @@
-# artifacts
-data/
-models/
-storage/
-
 notebooks/.ipynb_checkpoints/*
 notebooks/catboost_info/*
 notebooks/train_files/*
 *.tmp
 *.pyc
+*.csv
+*.cb
