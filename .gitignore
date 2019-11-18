@@ -6,3 +6,5 @@ storage/
 notebooks/.ipynb_checkpoints/*
 notebooks/catboost_info/*
 notebooks/train_files/*
+*.tmp
+*.pyc
