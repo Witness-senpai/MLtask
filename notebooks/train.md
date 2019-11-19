@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 %matplotlib inline
 
+
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.metrics import roc_curve, roc_auc_score
 from sklearn.model_selection import train_test_split
@@ -112,7 +113,7 @@ hold_part = 0.02
 
 ```python
 %%time
-data_path = '../data/filtered_train_data.csv'
+data_path = 'data/filtered_train_data.csv'
 data = pd.read_csv(data_path, dtype=dtypes)
 ```
 
@@ -152,7 +153,7 @@ enc.fit(category_data)
 
 
 ```python
-category_data.info()
+category_data.info(null_counts=True)
 ```
 
 
@@ -239,7 +240,8 @@ gauss_model.fit(train_data[:,0:-1], train_data[:,-1])
 plt.figure(figsize=(10,10))
 plot_roc_curve(true=val_data[:,-1],
                pred=gauss_model.predict_proba(val_data[:,0:-1])[:,1],
-               name='ROC-кривая на валидационном датасете')
+               name='ROC-кривая на валидационном датасете',
+               p_label=1)
 ```
 
 
@@ -265,7 +267,8 @@ bernoulli_model.fit(train_data[:,0:-1], train_data[:,-1])
 plt.figure(figsize=(10,10))
 plot_roc_curve(true=val_data[:,-1],
                pred=bernoulli_model.predict_proba(val_data[:,0:-1])[:,1],
-               name='ROC-кривая на валидационном датасете')
+               name='ROC-кривая на валидационном датасете',
+               p_label=1)
 ```
 
 # Подготовка данных для Catboost
@@ -295,7 +298,7 @@ val_pool = dataframe_to_pool(val_data, numerical_cols, categorical_cols, TARGET_
 
 
 ```python
-hold_data.to_csv('../data/hold_data.csv', index=False)
+hold_data.to_csv('data/hold_data.csv', index=False)
 ```
 
 
@@ -316,7 +319,7 @@ model.fit(train_pool, eval_set=val_pool, plot=True, verbose=True)
 
 
 ```python
-model_path = '../models/model.cb'
+model_path = 'models/model.cb'
 model.save_model(model_path)
 ```
 
@@ -335,56 +338,24 @@ for feature_id in feature_importance.argsort()[::-1]:
 
 
 ```python
-def plot_roc_curve(true,
-                   pred,
-                   name,
-                   weights=None,
-                   label='',
-                   color='darkorange',
-                   ax=None,
-                   p_label='1',
-):
-    if ax is None:
-        ax = plt.gca()
-    fpr, tpr, thr = roc_curve(true, pred, sample_weight=weights, pos_label=p_label)
-    lw = 2
-    ax.plot(fpr,
-            tpr,
-            color=color,
-            lw=lw,
-            label=('ROC {} curve (area = {:0.3f})'
-                   .format(label, roc_auc_score(true,
-                                                pred,
-                                                sample_weight=weights))))
-    ax.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-    ax.set_xlim([0.0, 1.0])
-    ax.set_ylim([0.0, 1.05])
-    ax.set_xlabel('False Positive Rate')
-    ax.set_ylabel('True Positive Rate')
-    ax.set_title(name)
-    ax.legend(loc="lower right")
+model.load_model('models/model.cb')
 ```
 
 
 ```python
-model.load_model('../models/model.cb')
+hold_data = pd.read_csv('data/hold_data.csv', dtype=dtypes)
 ```
 
 
 ```python
-val_data = pd.read_csv('../data/hold_data.csv', dtype=dtypes)
-```
-
-
-```python
-val_pool = dataframe_to_pool(val_data, numerical_cols, categorical_cols, TARGET_COLUMN)
+hold_pool = dataframe_to_pool(hold_data, numerical_cols, categorical_cols, TARGET_COLUMN)
 ```
 
 
 ```python
 plt.figure(figsize=(10,10))
-plot_roc_curve(true=val_pool.get_label(),
-               pred=model.predict_proba(val_pool)[:,1],
+plot_roc_curve(true=hold_pool.get_label(),
+               pred=model.predict_proba(hold_pool)[:,1],
                name='ROC-кривая на валидационном датасете',
                p_label='1')
 ```

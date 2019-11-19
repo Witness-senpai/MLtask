@@ -5,3 +5,5 @@ notebooks/train_files/*
 *.pyc
 *.csv
 *.cb
+.ipynb_checkpoints/Untitled-checkpoint.ipynb
+catboost_info/*
