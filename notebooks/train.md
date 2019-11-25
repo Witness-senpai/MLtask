@@ -2,7 +2,6 @@
 
 
 ```python
-import pickle
 import gc
 
 import catboost as cb
@@ -11,97 +10,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 %matplotlib inline
 
+from keras.layers import Dense
+from keras.models import Sequential
+from keras.utils import to_categorical
+from keras.optimizers import Adam
 
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.metrics import roc_curve, roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
-from malware_src.prepare_data import dataframe_to_pool
+from malware_src.prepare_data import (dtypes,
+                                    TARGET_COLUMN, 
+                                    categorical_cols, 
+                                    numerical_cols, 
+                                    dataframe_to_pool)
 from malware_src.visualization import plot_roc_curve
 ```
 
 # Загрузка и разделение данных
-
-
-```python
-dtypes = {
-    'EngineVersion':                                     'category',
-    'AppVersion':                                        'category',
-    'AvSigVersion':                                      'category',
-    'RtpStateBitfield':                                  'category',
-    'DefaultBrowsersIdentifier':                         'category',
-    'AVProductStatesIdentifier':                         'category',
-    'AVProductsInstalled':                               'category',
-    'AVProductsEnabled':                                 'category',
-    'CountryIdentifier':                                 'category',
-    'CityIdentifier':                                    'category',
-    'OrganizationIdentifier':                            'category',
-    'GeoNameIdentifier':                                 'category',
-    'LocaleEnglishNameIdentifier':                       'category',
-    'Platform':                                          'category',
-    'Processor':                                         'category',
-    'OsVer':                                             'category',
-    'OsBuild':                                           'category',
-    'OsSuite':                                           'category',
-    'OsPlatformSubRelease':                              'category',
-    'OsBuildLab':                                        'category',
-    'SkuEdition':                                        'category',
-    'IsProtected':                                       'category',
-    'IeVerIdentifier':                                   'category',
-    'SmartScreen':                                       'category',
-    'Firewall':                                          'category',
-    'Census_MDC2FormFactor':                             'category',
-    'Census_OEMNameIdentifier':                          'category',
-    'Census_OEMModelIdentifier':                         'category',
-    'Census_ProcessorManufacturerIdentifier':            'category',
-    'Census_ProcessorModelIdentifier':                   'category',
-    'Census_ProcessorClass':                             'category',
-    'Census_PrimaryDiskTypeName':                        'category',
-    'Census_HasOpticalDiskDrive':                        'category',
-    'Census_ChassisTypeName':                            'category',
-    'Census_PowerPlatformRoleName':                      'category',
-    'Census_InternalBatteryType':                        'category',
-    'Census_OSVersion':                                  'category',
-    'Census_OSArchitecture':                             'category',
-    'Census_OSBranch':                                   'category',
-    'Census_OSBuildNumber':                              'category',
-    'Census_OSBuildRevision':                            'category',
-    'Census_OSEdition':                                  'category',
-    'Census_OSSkuName':                                  'category',
-    'Census_OSInstallTypeName':                          'category',
-    'Census_OSInstallLanguageIdentifier':                'category',
-    'Census_OSUILocaleIdentifier':                       'category',
-    'Census_OSWUAutoUpdateOptionsName':                  'category',
-    'Census_GenuineStateName':                           'category',
-    'Census_ActivationChannel':                          'category',
-    'Census_FlightRing':                                 'category',
-    'Census_FirmwareManufacturerIdentifier':             'category',
-    'Census_FirmwareVersionIdentifier':                  'category',
-    'Census_IsSecureBootEnabled':                        'category',
-    'Census_IsTouchEnabled':                             'category',
-    'Census_IsPenCapable':                               'category',
-    'Census_IsAlwaysOnAlwaysConnectedCapable':           'category',
-    'Wdft_IsGamer':                                      'category',
-    'Wdft_RegionIdentifier':                             'category',
-    'HasDetections':                                     'category',
-    'Census_ProcessorCoreCount':                         'float16',
-    'Census_PrimaryDiskTotalCapacity':                   'float64',
-    'Census_SystemVolumeTotalCapacity':                  'float64',
-    'Census_TotalPhysicalRAM':                           'float32',
-    'Census_InternalPrimaryDiagonalDisplaySizeInInches': 'float32',
-    'Census_InternalPrimaryDisplayResolutionHorizontal': 'float32',
-    'Census_InternalPrimaryDisplayResolutionVertical':   'float32',
-    'Census_InternalBatteryNumberOfCharges':             'float64'
-}
-
-TARGET_COLUMN = 'HasDetections'
-```
-
-
-```python
-categorical_cols = [el for el in dtypes if dtypes[el] == 'category']
-numerical_cols = [el for el in dtypes if dtypes[el] != 'category']
-```
 
 
 ```python
@@ -119,10 +46,10 @@ data = pd.read_csv(data_path, dtype=dtypes)
 
 
 ```python
-data.shape[0]
+data.shape
 ```
 
-## Подготовка данных для моделей из naive bayes
+## Подготовка категориальных данных для моделей
 
 
 ```python
@@ -131,24 +58,15 @@ enc = OrdinalEncoder()
 
 
 ```python
-data.info()
-```
-
-
-```python
-# Убрать все NaN в категориальных столбцах
-category_data = pd.DataFrame(data, columns=categorical_cols)
+# Убрать все NaN в категориальных столбцах и заменить их на '-1'.
+# Так как тип данных - категориальный, NaN заполняются строкой
+category_data = data.loc[:, categorical_cols]
 for col in categorical_cols:
     try:
         category_data.loc[:, col] = category_data[col].fillna('-1')
-    except:
+    except ValueError:
         category_data[col] = category_data[col].cat.add_categories('-1')
         category_data.loc[:, col] = category_data[col].fillna('-1')
-```
-
-
-```python
-enc.fit(category_data)
 ```
 
 
@@ -158,12 +76,19 @@ category_data.info(null_counts=True)
 
 
 ```python
+enc.fit(category_data)
+```
+
+
+```python
+# Получаем nparray, заполненный числами, каждое из которых соответсвует
+# своей категории в конкретном столбце.
 filtered_category_data = enc.transform(category_data)
 ```
 
 
 ```python
-numeric_data = pd.DataFrame(data, columns=numerical_cols)
+numeric_data = data.loc[:, numerical_cols]
 ```
 
 
@@ -173,11 +98,12 @@ filtered_numeric_data = numeric_data.to_numpy()
 
 
 ```python
-# Убрать все NaN в числовых столбцах
+# Убрать все NaN в числовых столбцах и заменить их на -1.
+# Тип столбцов числовой, поэтому заменяется на -1, а не '-1'
 for col in numerical_cols:
     try:
         numeric_data.loc[:, col] = numeric_data[col].fillna(-1)
-    except:
+    except ValueError:
         numeric_data[col] = numeric_data[col].cat.add_categories(-1)
         numeric_data.loc[:, col] = numeric_data[col].fillna(-1)
 ```
@@ -212,12 +138,12 @@ val_data = np.nan_to_num(val_data)
 
 
 ```python
-train_data
+np.argwhere(np.isnan(train_data))
 ```
 
 
 ```python
-val_data
+np.argwhere(np.isnan(val_data))
 ```
 
 ## Обучение моделей
@@ -244,11 +170,6 @@ plot_roc_curve(true=val_data[:,-1],
                p_label=1)
 ```
 
-
-```python
-gc.collect()
-```
-
 ### BernoulliNB
 
 
@@ -271,6 +192,71 @@ plot_roc_curve(true=val_data[:,-1],
                p_label=1)
 ```
 
+### Keras sequential
+
+
+```python
+# Преобразование числового столбца в бинарный для работы с линейной моделью
+binary_target = to_categorical(train_data[:, -1])
+```
+
+
+```python
+%%time
+seq_model = Sequential()
+
+# Активационная функция softmax нужна для категориальных данных на выходе
+seq_model.add(Dense(128, input_dim=len(train_data[0])-1, activation='sigmoid'))
+seq_model.add(Dense(128, activation='sigmoid'))
+seq_model.add(Dense(2, activation='softmax'))
+
+# Так как таргет может быть либо 0 либо 1, то ошибку считаем по бинарной кроссэнтропии.
+# Метрика точности так же задаётся для бинарного таргета 
+seq_model.compile(loss='binary_crossentropy', 
+                optimizer=Adam(), 
+                metrics=['binary_accuracy'] 
+                )
+
+seq_model.fit(
+            x=train_data[:, 0:-1],
+            y=binary_target,
+            epochs=50,
+            batch_size=200000
+            )
+```
+
+
+```python
+plt.figure(figsize=(10,10))
+plot_roc_curve(true=val_data[:, -1],
+            pred=seq_model.predict_proba(val_data[:, 0:-1])[:,1],
+            name='ROC-кривая на валидационном датасете',
+            p_label=1)
+```
+
+### RandomForestClassifier
+
+
+```python
+%%time
+rf_model = RandomForestClassifier(n_estimators=50)
+rf_model.fit(train_data[:, 0:-1], binary_target)
+```
+
+
+```python
+plt.figure(figsize=(10,10))
+plot_roc_curve(true=val_data[:, -1],
+            pred=rf_model.predict(val_data[:, 0:-1])[:, 1],
+            name='ROC-кривая на валидационном датасете',
+            p_label=1)
+```
+
+### Выводы
+
+Простые модели наивного байеса показали себя чуть лучше, чем подкидывание монетки. При этом Гауссовская модель заметно отстаёт от Бернулли. Отсюда делается вывод, что исходные данные имеют мало общего с распредлением по Бернулли и тем более по Гауссу. 
+Классическая линейная модель показала аналогичный результат с наивным байесом по Бернулли. Скорее всего, данные слишком сложные для предложенной структуры нейросети. Также, по логу keras видно, что ошибка за 2 первые эпохи спускается до конкретного числа и больше не может существенно сдвинуться с этой точки, это следствие попадания в локальный минимум. А лучше всего с существенным отрывом от других моделей себя показал случайный лес.
+
 # Подготовка данных для Catboost
 
 ###  Обучение
@@ -288,10 +274,11 @@ print(data.shape[0], train_data.shape[0], val_data.shape[0], hold_data.shape[0])
 
 
 ```python
-try:
-    categorical_cols.remove(TARGET_COLUMN)
-except Exception as ex:
-    print(ex)
+categorical_cols.remove(TARGET_COLUMN)
+```
+
+
+```python
 train_pool = dataframe_to_pool(train_data, numerical_cols, categorical_cols, TARGET_COLUMN)
 val_pool = dataframe_to_pool(val_data, numerical_cols, categorical_cols, TARGET_COLUMN)
 ```
@@ -299,11 +286,6 @@ val_pool = dataframe_to_pool(val_data, numerical_cols, categorical_cols, TARGET_
 
 ```python
 hold_data.to_csv('data/hold_data.csv', index=False)
-```
-
-
-```python
-gc.collect()
 ```
 
 
@@ -338,24 +320,14 @@ for feature_id in feature_importance.argsort()[::-1]:
 
 
 ```python
-model.load_model('models/model.cb')
-```
-
-
-```python
-hold_data = pd.read_csv('data/hold_data.csv', dtype=dtypes)
-```
-
-
-```python
-hold_pool = dataframe_to_pool(hold_data, numerical_cols, categorical_cols, TARGET_COLUMN)
-```
-
-
-```python
 plt.figure(figsize=(10,10))
-plot_roc_curve(true=hold_pool.get_label(),
-               pred=model.predict_proba(hold_pool)[:,1],
+plot_roc_curve(true=val_pool.get_label(),
+               pred=model.predict_proba(val_pool)[:,1],
                name='ROC-кривая на валидационном датасете',
                p_label='1')
+```
+
+
+```python
+
 ```
