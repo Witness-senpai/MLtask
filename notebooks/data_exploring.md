@@ -28,7 +28,8 @@ train_data_path = '../data/train.csv'
 
 ```python
 # Заранее предопределённые типы, чтобы при загрузке всех данных с помощью pandas
-# расходовалось намного меньше памяти. 
+# расходовалось намного меньше памяти.
+# Типы позаимствованы отсюда: https://www.kaggle.com/theoviel/load-the-totality-of-the-data 
 dtypes = {
         'MachineIdentifier':                                    'category',
         'ProductName':                                          'category',
