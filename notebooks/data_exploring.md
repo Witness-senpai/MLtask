@@ -27,6 +27,9 @@ train_data_path = '../data/train.csv'
 
 
 ```python
+# Заранее предопределённые типы, чтобы при загрузке всех данных с помощью pandas
+# расходовалось намного меньше памяти.
+# Типы позаимствованы отсюда: https://www.kaggle.com/theoviel/load-the-totality-of-the-data 
 dtypes = {
         'MachineIdentifier':                                    'category',
         'ProductName':                                          'category',
@@ -126,6 +129,8 @@ train_data.info()
 
 
 ```python
+# Удостовериваемся, что импорт прошёл верно, просмотрев все столбцы в первых 5 строчках
+pd.set_option('display.max_columns', len(train_data.columns))  
 train_data.head()
 ```
 
@@ -162,9 +167,6 @@ for col in cols[1:]:
     unique_values = len(col_stat)
     part_most_popular_val = col_stat.iloc[0] / col_stat.sum()
     stat_cols.append((col, unique_values, part_most_popular_val))
-    
-    if (col not in numerical_cols and part_most_popular_val <= 0.98):
-        categorical_cols.append(col)
 
 # Getting max width of each column for next printing
 max_widths = []
@@ -178,6 +180,26 @@ for row in stat_cols:
     print(formated_row)
 ```
 
+Заметим, что существуют столбцы, с очень большой долей самого популярного элемента. При этом, количество уникальных элементов в них очень малое. Напрашивается вывод, что такие столбцы вряд ли смогут повлиять на результирующий столбец. Предположим, что столбцы с долей самого популярного элемента больше 98% не повлияют на результат. В следующей ячейке наглядно показаны такие столбцы.
+
+
+```python
+MOST_PART = 0.98
+useless_cols = []
+
+# Пропуск первого элемента с названиями столбцов форматированого вывода
+for stat in stat_cols[1:]:
+    # 2 элемент кортежа stat показывает часть самого популярного значения в столбце
+    if (stat[2] > MOST_PART):
+        pprint(stat)
+        useless_cols.append(stat[0])
+```
+
+
+```python
+categorical_cols = [col for col in cols[1:] if col not in useless_cols + numerical_cols]
+```
+
 
 ```python
 pprint(categorical_cols)
@@ -188,20 +210,11 @@ pprint(categorical_cols)
 pprint(numerical_cols)
 ```
 
-
-```python
-gc.collect()
-```
-
 # Сохраняем данные только с необходимыми столбцами
 
 
 ```python
-filtered_cols = numerical_cols + categorical_cols
-
-for col in cols:
-    if col not in filtered_cols:
-        train_data.drop(col, axis=1, inplace=True)
+train_data.drop(columns=useless_cols, inplace=True)
 ```
 
 
